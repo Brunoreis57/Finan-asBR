@@ -18,5 +18,13 @@ export default defineConfig({
       },
     },
     outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: true
   },
+  base: './',
+  resolve: {
+    alias: {
+      '~': resolve(__dirname, 'src')
+    }
+  }
 });
