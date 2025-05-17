@@ -18,8 +18,32 @@ function WorkoutItem({ workout }: WorkoutItemProps) {
   
   const handleDelete = () => {
     if (confirm('Tem certeza que deseja excluir este treino?')) {
-      deleteWorkout(workout.id);
-      window.location.reload(); // Simple way to refresh data
+      try {
+        const success = deleteWorkout(workout.id);
+        if (success) {
+          // Mostrar uma mensagem de feedback breve
+          const messageElement = document.createElement('div');
+          messageElement.className = 'fixed top-4 right-4 bg-green-100 border border-green-300 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-300 p-3 rounded-md z-50';
+          messageElement.textContent = 'Treino excluído com sucesso';
+          document.body.appendChild(messageElement);
+          
+          // Remover o elemento após 3 segundos
+          setTimeout(() => {
+            document.body.removeChild(messageElement);
+          }, 3000);
+          
+          // Recarregar a página após uma pequena pausa
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          console.error('Não foi possível excluir o treino');
+          alert('Não foi possível excluir o treino. Tente novamente mais tarde.');
+        }
+      } catch (error) {
+        console.error('Erro ao excluir treino:', error);
+        alert('Ocorreu um erro ao excluir o treino. Tente novamente mais tarde.');
+      }
     }
   };
   

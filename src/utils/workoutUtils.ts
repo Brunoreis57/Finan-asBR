@@ -1,3 +1,5 @@
+import { TreinoProcessado } from './workoutAI';
+
 export type WorkoutType = 'running' | 'gym';
 
 // Common workout fields
@@ -6,6 +8,8 @@ interface BaseWorkout {
   type: WorkoutType;
   date: string;
   notes?: string;
+  textoOriginal?: string; // Descrição em texto livre fornecida pelo usuário
+  dadosProcessados?: TreinoProcessado; // Dados estruturados extraídos do texto
 }
 
 // Running-specific fields
@@ -73,13 +77,23 @@ export function addGymWorkout(workout: Omit<GymWorkout, 'id'>): GymWorkout {
 
 // Delete a workout
 export function deleteWorkout(id: string): boolean {
-  const workouts = getWorkouts();
-  const filteredWorkouts = workouts.filter(w => w.id !== id);
-  
-  if (filteredWorkouts.length !== workouts.length) {
+  try {
+    const workouts = getWorkouts();
+    
+    // Verifica se o ID existe antes de tentar excluir
+    const workoutToDelete = workouts.find(w => w.id === id);
+    if (!workoutToDelete) {
+      console.error(`Treino com ID ${id} não encontrado`);
+      return false;
+    }
+    
+    const filteredWorkouts = workouts.filter(w => w.id !== id);
+    
+    // Salva a nova lista no localStorage
     localStorage.setItem('workouts', JSON.stringify(filteredWorkouts));
     return true;
+  } catch (error) {
+    console.error('Erro ao excluir treino:', error);
+    return false;
   }
-  
-  return false;
 }
